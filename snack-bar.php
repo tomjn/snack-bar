@@ -3,33 +3,35 @@
  Plugin Name: Snack Bar
  Plugin URI: http://wordpress.org/extend/plugins/snack-bar/
  Description: Adds a snack menu to the admin bar 
- Author: wpmuguru, westi, PeteMall
- Version: 0.1.3
+ Author: wpmuguru, westi, PeteMall, tjnowell
+ Version: 0.1.4
  */
 
 function snack_bar_menu() {
 	global $wp_admin_bar, $wpdb, $wp_version;
 
 	if ( ! is_super_admin() || ! is_admin_bar_showing() )
-	return;
+		return;
 
 	$class = 'snack-bar';
 
-	/* Add the main siteadmin menu item */
+	// Add the main siteadmin menu item
 	$site_parent = $parent = 'snack';
+
 	// toolbar?
 	$is_toolbar = version_compare( $wp_version, '3.3', '>=' );
-	if( is_multisite() && $is_toolbar )
+	if ( is_multisite() && $is_toolbar ) {
 		$parent = 'network-admin';
-	else
+	} else {
 		$wp_admin_bar->add_menu( array( 'id' => $parent, 'title' => __('Snacks'), 'href' => '', 'meta' => array( 'class' => $class ) ) );
+	}
 
 
 	if ( is_multisite() ) {
 		/* add levels for site/network sub menus */
 		$site_parent = 'snack_site';
 		$net_parent = 'snack_network';
-		if( $is_toolbar ) {
+		if ( $is_toolbar ) {
 			$wp_admin_bar->remove_node( 'network-admin-v' );
 			$wp_admin_bar->add_menu( array( 'id' => 'net_themes', 'parent' => $parent, 'title' => __('Themes'), 'href' => network_admin_url( 'themes.php' ), 'meta' => array( 'class' => $class ) ) );
 			$wp_admin_bar->add_menu( array( 'id' => 'net_plugins', 'parent' => $parent, 'title' => __('Plugins'), 'href' => network_admin_url( 'plugins.php' ), 'meta' => array( 'class' => $class ) ) );
@@ -40,7 +42,7 @@ function snack_bar_menu() {
 		$wp_admin_bar->add_menu( array( 'id' => $site_parent, 'parent' => $parent, 'title' => $site_name ? $site_name : __('Site'), 'href' => admin_url(), 'meta' => array( 'class' => $class ) ) );
 
 		/* add network menu items */
-		if( !$is_toolbar ) {
+		if ( !$is_toolbar ) {
 			$wp_admin_bar->add_menu( array( 'id' => $net_parent, 'parent' => $parent, 'title' => __('Network'), 'href' => network_admin_url(), 'meta' => array( 'class' => $class ) ) );
 			$wp_admin_bar->add_menu( array( 'id' => 'net_sites', 'parent' => $net_parent, 'title' => __('Sites'), 'href' => network_admin_url( 'sites.php' ), 'meta' => array( 'class' => $class ) ) );
 			$wp_admin_bar->add_menu( array( 'id' => 'net_users', 'parent' => $net_parent, 'title' => __('Users'), 'href' => network_admin_url( 'users.php' ), 'meta' => array( 'class' => $class ) ) );
@@ -55,7 +57,7 @@ function snack_bar_menu() {
 		$wp_admin_bar->add_menu( array( 'id' => 'site_themes', 'parent' => $site_parent, 'title' => __('Themes'), 'href' => network_admin_url( 'site-themes.php?id=' . $wpdb->blogid ), 'meta' => array( 'class' => $class ) ) );		
 		$wp_admin_bar->add_menu( array( 'id' => 'site_plugins', 'parent' => $site_parent, 'title' => __('Plugins'), 'href' => admin_url( 'plugins.php' ), 'meta' => array( 'class' => $class ) ) );
 		
-		if( !is_main_site() ) {
+		if ( !is_main_site() ) {
 			$items = array();
 			$blogname = get_option( 'blogname' );
 			if ( get_blog_status( $wpdb->blogid, 'deleted' ) == '1' )
@@ -86,12 +88,3 @@ function snack_bar_menu() {
 	}
 }
 add_action( 'admin_bar_menu', 'snack_bar_menu', 1000 );
-
-function snack_bar_menu_init() {
-	if ( ! is_super_admin() || ! is_admin_bar_showing() )
-		return;
-
-	$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
-	wp_enqueue_style( 'snack-bar', plugins_url(  "snack-bar$suffix.css", __FILE__ ), array(), '20101112' );
-}
-add_action('admin_bar_init', 'snack_bar_menu_init');
