@@ -1,0 +1,9 @@
+{
+    "name"       : "snack-bar/snack-bar",
+    "description": "Adds a snack menu to the admin bar that provides quick access to blog/network admin screens for SuperAdmins",
+    "type"       : "wordpress-plugin",
+    "license"    : "GPL-2.0+",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
